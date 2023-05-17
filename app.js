@@ -176,8 +176,9 @@ app.post("/auth/login", async(req,res) => {
         )
 
         id = user._id
+        role = user.role
 
-        res.status(200).json({msg: "Autenticação realizada com sucesso", token , id })
+        res.status(200).json({msg: "Autenticação realizada com sucesso", token , id, role })
 
     }catch(err){
         res.status(500).json({msg: 'Aconteceu um erro, tente novamente mais tarde'})
