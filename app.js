@@ -190,7 +190,7 @@ app.post("/auth/login", async(req,res) => {
 // Book register Route ------------------------------------------------------------------------------------------
 app.post("/books/insert", async(req,res) => {
 
-    const {isbn, title,  author, amount} = req.body
+    const {isbn, title,  author, year, pub, genre, sin, amount} = req.body
 
     if(!isbn){
         return res.status(422).json({msg: "O Código ISBN é obrigatório!"})
@@ -204,6 +204,15 @@ app.post("/books/insert", async(req,res) => {
     if(!amount || amount < 0){
         return res.status(422).json({msg: "A quantidade inválida"})
     }
+    if(!year){
+        return res.status(422).json({msg: "O Ano é obrigatório!"})
+    }
+    if(!pub){
+        return res.status(422).json({msg: "A Editora é obrigatória!"})
+    }
+    if(!genre){
+        return res.status(422).json({msg: "O Gênero é obrigatório!"})
+    }
 
     const isbnExists = await Book.findOne({isbn: isbn })
 
@@ -214,8 +223,13 @@ app.post("/books/insert", async(req,res) => {
     const book = new Book({
         isbn, 
         title,  
-        author, 
-        amount
+        author,
+        year, 
+        pub, 
+        genre, 
+        sin ,
+        amount,
+
     })
     
 
@@ -245,7 +259,7 @@ app.get("/books/list",async(req,res) => {
 // Book Update Route --------------------------------------------------------------------------------------------
 app.patch("/books/update/:id", async(req,res) => {
 
-    const {isbn, title,  author, amount} = req.body
+    const {isbn, title,  author, year, pub, genre, sin, amount} = req.body
 
     try{
     const book = await Book.findById(req.params.id)
