@@ -17,6 +17,7 @@ app.use(express.json())
 // Models
 const User = require('./models/User')
 const Book = require('./models/Book')
+const Booking = require('./models/Booking')
 
 
 //---------------------------------------------------ROUTES-----------------------------------------------------------------------------
@@ -288,6 +289,109 @@ app.delete("/books/delete/:id", async(req,res) => {
         }
 
 })
+
+//Booking Create Route ------------------------------------------------------------------------------------------
+app.post('/booking/insert', async(req,res) => {
+
+    const {startDate, userRa, bookIsbn, endDate} = req.body;
+    const currentDate = new Date()
+    const status = 'active'
+    const bookings = await Booking.count({userRa: userRa, status: status })
+
+
+
+    if(bookings >= 3){
+        return res.status(422).json({msg: 'Numero de reservas excedidas'})
+
+    }
+
+
+    data = null
+    contentType = null
+
+    const booking = new Booking({
+        info: {
+
+            startDate, 
+            userRa, 
+            bookIsbn,
+            endDate,
+            status
+        },
+
+        file: {
+            data,
+            contentType
+        }
+
+    })
+    
+
+    try{
+
+        await booking.save()
+        res.status(201).json({msg:"Reserva feita com sucesso!"})
+
+    }catch(error){
+        res.status(500).json({msg: 'Aconteceu um erro, tente novamente mais tarde'})
+
+    }
+})
+
+//User Bookings Fetch Route
+app.patch("/user/booking/update/:id", async(req,res) => {
+
+    const id = req.params.id
+
+    const date = new Date()
+
+    const user = await User.findById(id)
+
+    const userRa = user['ra']
+
+    const activeBookings = await Booking.find({userRa: userRa, status: 'active'})
+
+    for (item in activeBookings){
+
+        if(item['endDate']< date){
+
+            const newBooking = new Book({
+                info:{
+                    startDate: item['startDate'],
+                    userRa: item['userRa'],
+                    bookIsbn: item['bookIsbn'],
+                    endDate: item['endDate'],
+                    status : 'inactive',
+            
+                },
+                file:{
+                    data: item['data'],
+                    contentTpe: item['contentType']
+            
+                }
+        
+            })
+
+            Object.assign(item, newBooking)
+            book.save()
+
+        }
+    }
+
+
+
+    try{
+    const book = await Book.findById(req.params.id)
+    Object.assign(book, req.body)
+    book.save()
+    res.send({data:book})
+    } catch(err){
+        res.status(404).send({msg: "Livro não encontrado!"})
+    }
+
+
+})
+
 //---------------------------------------------------ROUTES ENDING------------------------------------------------------------------------
 
 
