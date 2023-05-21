@@ -296,7 +296,9 @@ app.post('/booking/insert', async(req,res) => {
     const {startDate, userRa, bookIsbn, endDate} = req.body;
     const currentDate = new Date()
     const status = 'active'
-    const bookings = await Booking.count({userRa: userRa, status: status })
+    const bookings = await Booking.count({'info.userRa': userRa, 'info.status':'active'})
+   
+    console.log(bookings)
 
 
 
@@ -346,48 +348,42 @@ app.patch("/user/booking/update/:id", async(req,res) => {
     const date = new Date()
 
     const user = await User.findById(id)
-
     const userRa = user['ra']
 
-    const activeBookings = await Booking.find({userRa: userRa, status: 'active'})
+    const activeBookings = await Booking.find({'info.userRa': userRa, 'info.status': 'active'})
 
-    for (item in activeBookings){
-
-        if(item['endDate']< date){
-
-            const newBooking = new Book({
-                info:{
-                    startDate: item['startDate'],
-                    userRa: item['userRa'],
-                    bookIsbn: item['bookIsbn'],
-                    endDate: item['endDate'],
-                    status : 'inactive',
-            
-                },
-                file:{
-                    data: item['data'],
-                    contentTpe: item['contentType']
-            
-                }
+    if(activeBookings.length > 0){
         
-            })
 
-            Object.assign(item, newBooking)
-            book.save()
+         for (let i = 0; i< activeBookings.length; i++){
 
+            item = await Booking.findById(activeBookings[i]['id'])
+            console.log(item)
+       
+            if(item['info']['endDate']< date){
+
+                console.log(item)
+                try{
+                    
+                    att = await Booking.findByIdAndUpdate(item['id'], {'info.status': 'inactive'})
+                    console.log(att)
+                
+
+                }catch(err){
+                    res.status(500).json({msg: 'Aconteceu um erro, tente novamente mais tarde'})
+                }
+            
+
+            }
         }
-    }
+    res.status(201).json({msg:"Atualização feita com sucesso!"})
 
+}
 
+else{
+    res.status(201).json({msg:"Nenhuma reserva para atualizar"})
+}
 
-    try{
-    const book = await Book.findById(req.params.id)
-    Object.assign(book, req.body)
-    book.save()
-    res.send({data:book})
-    } catch(err){
-        res.status(404).send({msg: "Livro não encontrado!"})
-    }
 
 
 })
