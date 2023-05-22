@@ -112,7 +112,7 @@ app.post('/auth/register',async(req,res) => {
     const salt = await bcrypt.genSalt(12)
     const passwordHash = await bcrypt.hash(password, salt)
 
-    state = "aprovado"
+    state = "pendente"
     
     const user = new User({
         name,
@@ -153,6 +153,15 @@ app.post("/auth/login", async(req,res) => {
 
     //Check if user exists
     const user = await User.findOne({email: email })
+
+    if(user['state'] == 'pendente'){
+        return res.status(404).json({msg: 'Cadastro pendente, aguarde a aprovação'})
+    }
+
+    if(user['state'] == 'suspenso'){
+        return res.status(404).json({msg: 'Cadastro suspenso!'})
+    }
+
 
     if(!user){
         return res.status(404).json({msg: 'Usuário não encontrado'})
@@ -201,8 +210,34 @@ app.get("/users/pendent/list", async(req,res) => {
 
 })
 
+// Users Approving Route
+app.patch("/users/approving", async(req,res) => {
+    const ra = req.body
+
+    try{
+        const user = await User.findOneAndUpdate({ra: req.body.ra}, {'state': 'aprovado'})
+        res.status(201).json({msg:"Usuário Aprovado"})
+
+    }catch(err){
+        res.status(500).json({msg: 'Aconteceu um erro, tente novamente mais tarde'})
+    }
 
 
+})
+
+ //User Suspending Route
+app.patch("/users/suspending", async(req,res) => {
+    const ra = req.body
+
+    try{
+        const user = await User.findOneAndUpdate({ra: req.body.ra}, {'state': 'suspenso'})
+        res.status(201).json({msg:"Usuário Suspenso"})
+
+    }catch(err){
+        res.status(500).json({msg: 'Aconteceu um erro, tente novamente mais tarde'})
+    }
+
+})
 
 // Book register Route ------------------------------------------------------------------------------------------
 app.post("/books/insert", async(req,res) => {
