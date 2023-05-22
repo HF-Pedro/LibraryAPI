@@ -112,7 +112,7 @@ app.post('/auth/register',async(req,res) => {
     const salt = await bcrypt.genSalt(12)
     const passwordHash = await bcrypt.hash(password, salt)
 
-    state = "pendente"
+    state = "aprovado"
     
     const user = new User({
         name,
@@ -186,6 +186,22 @@ app.post("/auth/login", async(req,res) => {
     }
 
 })
+
+// Approved User List Route
+app.get("/users/approved/list", async(req,res) => {
+    const users = await User.find({'state':'aprovado'})
+    res.send({data : users})
+
+})
+
+// Pendent User List Route
+app.get("/users/pendent/list", async(req,res) => {
+    const users = await User.find({'state':'pendente'})
+    res.send({data : users})
+
+})
+
+
 
 
 // Book register Route ------------------------------------------------------------------------------------------
