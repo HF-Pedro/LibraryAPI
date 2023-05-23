@@ -205,7 +205,7 @@ app.get("/users/approved/list", async(req,res) => {
 
 // Pendent User List Route
 app.get("/users/pendent/list", async(req,res) => {
-    const users = await User.find({'state':'pendente'})
+    const users = await User.find({'state':['pendente', 'suspenso']})
     res.send({data : users})
 
 })
@@ -226,6 +226,20 @@ app.patch("/users/approving", async(req,res) => {
 })
 
  //User Suspending Route
+app.patch("/users/suspending", async(req,res) => {
+    const ra = req.body
+
+    try{
+        const user = await User.findOneAndUpdate({ra: req.body.ra}, {'state': 'suspenso'})
+        res.status(201).json({msg:"Usuário Suspenso"})
+
+    }catch(err){
+        res.status(500).json({msg: 'Aconteceu um erro, tente novamente mais tarde'})
+    }
+
+})
+
+//User Unsuspending Route
 app.patch("/users/suspending", async(req,res) => {
     const ra = req.body
 
