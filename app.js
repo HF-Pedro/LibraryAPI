@@ -372,17 +372,38 @@ app.delete("/books/delete/:id", async(req,res) => {
 
 })
 
+// Book Info Route
+app.get("/books/info/:id", async(req,res)=>{
+    id = req.params.id
+
+    const book = await Book.findById(id)
+
+    res.status(200).json({book})
+
+})
+
 //Booking Create Route ------------------------------------------------------------------------------------------
 app.post('/booking/insert', async(req,res) => {
 
-    const {startDate, userRa, bookIsbn, endDate} = req.body;
+    const {userRa, bookIsbn} = req.body;
+
+    
+
     const currentDate = new Date()
+
+    const startDate = currentDate
+
+    //Setting End Date to 3 days after the beggining
+    const endDate = currentDate
+    endDate.setDate(endDate.getDate()+3)
+
     const status = 'active'
     const bookings = await Booking.count({'info.userRa': userRa, 'info.status':'active'})
    
     console.log(bookings)
 
-
+    const tipo = QRCode(req.body['isbn'] + req.body['ra'])
+    console.log(tipo)
 
     if(bookings >= 3){
         return res.status(422).json({msg: 'Numero de reservas excedidas'})
@@ -421,6 +442,8 @@ app.post('/booking/insert', async(req,res) => {
 
     }
 })
+
+
 
 //User Bookings Fetch Route
 app.patch("/user/booking/update/:id", async(req,res) => {
@@ -471,6 +494,13 @@ else{
 })
 
 //---------------------------------------------------ROUTES ENDING------------------------------------------------------------------------
+
+
+//QR Code Generator
+function QRCode(cod){
+    return ('https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl='+ cod);
+
+}
 
 
 // Credenciais
