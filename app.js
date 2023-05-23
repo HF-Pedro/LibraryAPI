@@ -216,6 +216,7 @@ app.patch("/users/approving", async(req,res) => {
 
     try{
         const user = await User.findOneAndUpdate({ra: req.body.ra}, {'state': 'aprovado'})
+        console.log(user)
         res.status(201).json({msg:"Usuário Aprovado"})
 
     }catch(err){
@@ -239,6 +240,21 @@ app.patch("/users/suspending", async(req,res) => {
 
 })
 
+//User Reproving Route
+app.patch("/users/reproving", async(req,res) => {
+    const ra = req.body
+
+    try{
+        const user = await User.findOneAndDelete({ra: req.body.ra})
+        res.status(201).json({msg:"Usuário Reprovado"})
+
+    }catch(err){
+        res.status(500).json({msg: 'Aconteceu um erro, tente novamente mais tarde'})
+    }
+
+})
+
+
 //User Unsuspending Route
 app.patch("/users/suspending", async(req,res) => {
     const ra = req.body
@@ -252,6 +268,7 @@ app.patch("/users/suspending", async(req,res) => {
     }
 
 })
+
 
 // Book register Route ------------------------------------------------------------------------------------------
 app.post("/books/insert", async(req,res) => {
