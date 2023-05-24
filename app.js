@@ -432,9 +432,9 @@ function addDays(date, days) {
 
 
 //Bookings UserList Route ----------------------------------------------------------------------------------------
-app.get("/bookings/userlist/:userRa",async(req,res) => {
+app.get("/bookings/userlist/",async(req,res) => {
 
-    const userRa = req.params.userRa
+    const {userRa} = req.body
     const bookings = await Booking.find({'userRa' : userRa})
     console.log(bookings)
     var books = []
