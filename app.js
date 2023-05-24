@@ -246,6 +246,16 @@ app.patch("/users/reproving", async(req,res) => {
 
     try{
         const user = await User.findOneAndDelete({ra: req.body.ra})
+
+        const userBookings = await Booking.find({'userRa': req.body.ra})
+
+        for (let i = 0; i< userBookings.length; i++){  
+
+            deletedBooking = await Booking.findByIdAndDelete(userBookings[i]['_id'])
+
+        }
+
+
         res.status(201).json({msg:"Usuário Reprovado"})
 
     }catch(err){
@@ -439,6 +449,7 @@ app.get('/booking/list',async(req,res) => {
     res.send({data:bookings})
 
 })
+
 
 // Add Days Function ---------------------------------------------------------------------------------------------
 function addDays(date, days) {
