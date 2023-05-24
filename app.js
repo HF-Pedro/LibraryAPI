@@ -389,7 +389,7 @@ app.post('/booking/insert', async(req,res) => {
     endDate = addDays(endDate,3)
 
     const status = 'active'
-    const bookings = await Booking.count({'info.userRa': userRa, 'info.status':'active'})
+    const bookings = await Booking.count({'userRa': userRa, 'status':'active'})
    
     console.log(bookings)
 
@@ -436,7 +436,7 @@ app.get("/bookings/userlist/:userRa",async(req,res) => {
 
     const userRa = req.params.userRa
     console.log(userRa)
-    const bookings = await Booking.find({'info.userRa' : userRa})
+    const bookings = await Booking.find({'userRa' : userRa})
     res.send({data : bookings})
 })
 
@@ -450,7 +450,7 @@ app.patch("/user/booking/update/:id", async(req,res) => {
     const user = await User.findById(id)
     const userRa = user['ra']
 
-    const activeBookings = await Booking.find({'info.userRa': userRa, 'info.status': 'active'})
+    const activeBookings = await Booking.find({'userRa': userRa, 'status': 'active'})
 
     if(activeBookings.length > 0){
         
@@ -460,12 +460,12 @@ app.patch("/user/booking/update/:id", async(req,res) => {
             item = await Booking.findById(activeBookings[i]['id'])
             console.log(item)
        
-            if(item['info']['endDate']< date){
+            if(item['endDate']< date){
 
                 console.log(item)
                 try{
                     
-                    att = await Booking.findByIdAndUpdate(item['id'], {'info.status': 'inactive'})
+                    att = await Booking.findByIdAndUpdate(item['id'], {'status': 'inactive'})
                     console.log(att)
                 
 
