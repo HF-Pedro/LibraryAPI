@@ -372,15 +372,6 @@ app.delete("/books/delete/:id", async(req,res) => {
 
 })
 
-// Book Info Route
-app.get("/books/info/:id", async(req,res)=>{
-    id = req.params.id
-
-    const book = await Book.findById(id)
-
-    res.status(200).json({book})
-
-})
 
 //Booking Create Route ------------------------------------------------------------------------------------------
 app.post('/booking/insert', async(req,res) => {
@@ -402,8 +393,6 @@ app.post('/booking/insert', async(req,res) => {
    
     console.log(bookings)
 
-    const tipo = QRCode(req.body['isbn'] + req.body['ra'])
-    console.log(tipo)
 
     if(bookings >= 3){
         return res.status(422).json({msg: 'Numero de reservas excedidas'})
@@ -437,13 +426,23 @@ app.post('/booking/insert', async(req,res) => {
     }
 })
 
+// Add Days Function ---------------------------------------------------------------------------------------------
 function addDays(date, days) {
     date.setDate(date.getDate() + days);
     return date;
   }
 
 
-//User Bookings Fetch Route
+//Bookings UserList Route ----------------------------------------------------------------------------------------
+app.get("/bookings/userlist/:userRa",async(req,res) => {
+
+    const userRa = req.params.userRa
+    console.log(userRa)
+    const bookings = await Booking.find({'info.userRa' : userRa})
+    res.send({data : bookings})
+})
+
+//User Bookings Fetch Route ----------------------------------------------------------------------------------------
 app.patch("/user/booking/update/:id", async(req,res) => {
 
     const id = req.params.id
@@ -494,11 +493,6 @@ else{
 //---------------------------------------------------ROUTES ENDING------------------------------------------------------------------------
 
 
-//QR Code Generator
-function QRCode(cod){
-    return ('https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl='+ cod);
-
-}
 
 
 // Credenciais
