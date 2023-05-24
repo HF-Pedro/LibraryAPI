@@ -411,8 +411,6 @@ app.post('/booking/insert', async(req,res) => {
     }
 
 
-    data = null
-    contentType = null
 
     const booking = new Booking({
         info: {
@@ -421,12 +419,7 @@ app.post('/booking/insert', async(req,res) => {
             userRa, 
             bookIsbn,
             endDate,
-            status
-        },
-
-        file: {
-            data,
-            contentType
+            status,
         }
 
     })

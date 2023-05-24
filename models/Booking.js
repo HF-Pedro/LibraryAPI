@@ -9,11 +9,7 @@ const Booking = mongoose.model('Booking',{
         bookIsbn: String,
         endDate: Date,
         status: String,
-
-    },
-    file:{
-        data: Buffer,
-        contentType: String
+        
 
     }
 })
