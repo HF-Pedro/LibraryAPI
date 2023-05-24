@@ -443,16 +443,13 @@ app.get("/bookings/userlist/:userRa",async(req,res) => {
 
     const userRa = req.params.userRa
     const bookings = await Booking.find({'userRa' : userRa})
-    console.log(bookings)
     var books = []
 
     for (let i = 0; i< bookings.length; i++){
 
         const isbn = bookings[i]['bookIsbn']
-        console.log(isbn)
 
         item = await Book.findOne({'isbn' : isbn})
-        console.log(item)
         books.push(item)
 
 
