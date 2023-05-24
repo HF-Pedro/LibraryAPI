@@ -9,8 +9,8 @@ const Booking = mongoose.model('Booking',{
         bookIsbn: String,
         endDate: Date,
         status: String,
+        qrCode: String
         
-
     }
 })
 

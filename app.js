@@ -385,17 +385,17 @@ app.get("/books/info/:id", async(req,res)=>{
 //Booking Create Route ------------------------------------------------------------------------------------------
 app.post('/booking/insert', async(req,res) => {
 
-    const {userRa, bookIsbn} = req.body;
+    const {userRa, bookIsbn, qrCode} = req.body;
 
     
 
-    const currentDate = new Date()
+    var endDate = new Date()
 
-    const startDate = currentDate
+    const startDate = new Date()
 
     //Setting End Date to 3 days after the beggining
-    const endDate = currentDate
-    endDate.setDate(endDate.getDate()+3)
+    
+    endDate = addDays(endDate,3)
 
     const status = 'active'
     const bookings = await Booking.count({'info.userRa': userRa, 'info.status':'active'})
@@ -420,6 +420,7 @@ app.post('/booking/insert', async(req,res) => {
             bookIsbn,
             endDate,
             status,
+            qrCode
         }
 
     })
@@ -436,6 +437,10 @@ app.post('/booking/insert', async(req,res) => {
     }
 })
 
+function addDays(date, days) {
+    date.setDate(date.getDate() + days);
+    return date;
+  }
 
 
 //User Bookings Fetch Route
