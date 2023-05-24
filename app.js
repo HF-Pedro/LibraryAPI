@@ -388,6 +388,13 @@ app.post('/booking/insert', async(req,res) => {
     
     endDate = addDays(endDate,3)
 
+    const bookingExists = await booking.findOne({'userRa': userRa, 'bookIsbn': bookIsbn, 'status':'active'})
+
+    if(bookingExists){
+        return res.status(422).json({msg: 'Esse livro ja está atualmente reservado por você'})
+
+    }
+
     const status = 'active'
     const bookings = await Booking.count({'userRa': userRa, 'status':'active'})
    
