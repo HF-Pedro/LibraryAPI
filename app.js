@@ -431,6 +431,15 @@ app.post('/booking/insert', async(req,res) => {
     }
 })
 
+ //Booking List Route
+app.get('/booking/list',async(req,res) => {
+
+    const bookings = await Booking.find({'status':'active'})
+    
+    res.send({data:bookings})
+
+})
+
 // Add Days Function ---------------------------------------------------------------------------------------------
 function addDays(date, days) {
     date.setDate(date.getDate() + days);
@@ -504,6 +513,8 @@ else{
 
 
 })
+
+
 
 //---------------------------------------------------ROUTES ENDING------------------------------------------------------------------------
 
