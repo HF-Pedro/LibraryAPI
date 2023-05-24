@@ -402,15 +402,13 @@ app.post('/booking/insert', async(req,res) => {
 
 
     const booking = new Booking({
-        info: {
 
-            startDate, 
-            userRa, 
-            bookIsbn,
-            endDate,
-            status,
-            qrCode
-        }
+        startDate, 
+        userRa, 
+        bookIsbn,
+        endDate,
+        status,
+        qrCode
 
     })
     
