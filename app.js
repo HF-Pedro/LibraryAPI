@@ -318,10 +318,11 @@ app.post("/books/insert", async(req,res) => {
          return res.status(422).json({msg: 'isbn já cadastrado'})
      }
 
-     var thumb = null
+     if (isbn.length != 13 && isbn.length != 10) {
+        return res.status(422).json({msg: 'isbn inválido'})
+     }
 
-
-
+    var thumb = null
     thumb = await GetThumb(req.body.isbn)
     console.log(thumb)
 
@@ -544,9 +545,7 @@ else{
 
 function GetThumb(isbn) {
     return new Promise((resolve, reject) => {
-        if (isbn.length != 13 && isbn.length != 10) {
-            reject("ISBN inválido");
-        } else {
+        
             let request = new XMLHttpRequest();
             request.open("GET", "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn);
             request.send();
@@ -570,7 +569,7 @@ function GetThumb(isbn) {
                     reject("Erro na requisição");
                 }
             };
-        }
+        
     });
 }
 
