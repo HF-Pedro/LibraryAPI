@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const bcrypt = require ('bcrypt')
 const jwt = require('jsonwebtoken')
 const cors = require('cors')
-
+const XMLHttpRequest = require('xhr2')
 
 const app = express()
 
@@ -18,6 +18,11 @@ app.use(express.json())
 const User = require('./models/User')
 const Book = require('./models/Book')
 const Booking = require('./models/Booking')
+
+
+//Google Books API
+
+const apiKey = process.env.API_KEY
 
 
 //---------------------------------------------------ROUTES-----------------------------------------------------------------------------
@@ -313,6 +318,15 @@ app.post("/books/insert", async(req,res) => {
          return res.status(422).json({msg: 'isbn já cadastrado'})
      }
 
+     var thumb = null
+
+
+
+    thumb = await GetThumb(req.body.isbn)
+    console.log(thumb)
+
+
+
     const book = new Book({
         isbn, 
         title,  
@@ -322,6 +336,7 @@ app.post("/books/insert", async(req,res) => {
         genre, 
         sin ,
         amount,
+        thumb,
 
     })
     
@@ -524,6 +539,40 @@ else{
 
 
 })
+
+//Google API Function
+
+function GetThumb(isbn) {
+    return new Promise((resolve, reject) => {
+        if (isbn.length != 13 && isbn.length != 10) {
+            reject("ISBN inválido");
+        } else {
+            let request = new XMLHttpRequest();
+            request.open("GET", "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn);
+            request.send();
+            request.onload = () => {
+                if (request.status == 200) {
+                    const response = JSON.parse(request.response);
+                    if (response.totalItems > 0) {
+                        try{
+                            const thumb = response.items[0].volumeInfo.imageLinks.thumbnail;
+                            resolve(String(thumb));
+
+                        } catch(err){
+                          
+                                resolve('https://i.pinimg.com/222x/b4/9e/7a/b49e7a7298b855f8bf2cd3f5923ea7ab.jpg');
+                        }
+                        
+                    } else {
+                        resolve('https://i.pinimg.com/222x/b4/9e/7a/b49e7a7298b855f8bf2cd3f5923ea7ab.jpg');
+                    }
+                } else {
+                    reject("Erro na requisição");
+                }
+            };
+        }
+    });
+}
 
 
 

@@ -9,7 +9,8 @@ const Book = mongoose.model('Book',{
     pub: String,
     genre: String,
     sin: String,
-    amount: Number
+    amount: Number,
+    thumb: String
 })
 
 module.exports = Book
