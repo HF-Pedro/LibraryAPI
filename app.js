@@ -158,6 +158,9 @@ app.post("/auth/login", async(req,res) => {
 
     //Check if user exists
     const user = await User.findOne({email: email })
+    if(!user){
+        return res.status(404).json({msg: 'Usuário não encontrado'})
+    }
 
     if(user['state'] == 'pendente'){
         return res.status(404).json({msg: 'Cadastro pendente, aguarde a aprovação'})
@@ -167,10 +170,7 @@ app.post("/auth/login", async(req,res) => {
         return res.status(404).json({msg: 'Cadastro suspenso!'})
     }
 
-
-    if(!user){
-        return res.status(404).json({msg: 'Usuário não encontrado'})
-    }
+   
 
     //Check password
     const checkPassword = await bcrypt.compare(password,user.password)
